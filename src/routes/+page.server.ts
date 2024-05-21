@@ -1,5 +1,6 @@
 import path from 'path';
 import {google} from "googleapis";
+import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './@types';
 import { SPREADSHEET_ID } from '$env/static/private';
 
@@ -11,12 +12,22 @@ export const load: PageServerLoad = async ({params}) => {
 		})
 	});
 
-	const res = await sheets.spreadsheets.values.get({
+	const datesRes = await sheets.spreadsheets.values.get({
 		spreadsheetId: SPREADSHEET_ID,
 		range: 'Log!A:A',
 	});
 
+	const index = datesRes.data.values.findIndex(row => row[0] === '5/20/2024');
+	if (index === -1) {
+		error(404, 'Not found');
+	}
+
+	const dataRes = await sheets.spreadsheets.values.get({
+		spreadsheetId: SPREADSHEET_ID,
+		range: `Log!B${index + 1}:F${index + 7}`,
+	});
+
 	return {
-		values: res.data.values
+		values: dataRes.data.values
 	};
 }
