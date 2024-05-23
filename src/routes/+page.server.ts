@@ -1,10 +1,9 @@
-import path from 'path';
 import {google} from "googleapis";
 import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from './@types';
+import type { PageServerLoad } from './$types';
 import { SPREADSHEET_ID } from '$env/static/private';
 
-export const load: PageServerLoad = async ({params}) => {
+export const load: PageServerLoad = async () => {
 	const sheets = google.sheets({
 		version: 'v4',
 		auth: new google.auth.GoogleAuth({
@@ -17,10 +16,14 @@ export const load: PageServerLoad = async ({params}) => {
 		range: 'Log!A:A',
 	});
 
+	if (!datesRes.data.values) {
+		error(500, 'Failed database date request.');
+	}
+
 	const today = (new Date()).toLocaleDateString("en-US");
 	const index = datesRes.data.values.findIndex(row => row[0] === today);
 	if (index === -1) {
-		error(404, 'Not found');
+		error(500, `Failed database request for date '${today}'`);
 	}
 
 	const dataRes = await sheets.spreadsheets.values.get({

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Date } from 'svelte/reactivity';
 
 	let {data}: {
 		data: PageData
