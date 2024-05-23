@@ -37,3 +37,5 @@ export const load: PageServerLoad = async () => {
 		spreadsheetId: SPREADSHEET_ID,
 	};
 }
+
+export const ssr = false;

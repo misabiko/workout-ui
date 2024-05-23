@@ -9,8 +9,15 @@
 	const values = data.values;
 	const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${data.spreadsheetId}/edit#gid=0`;
 
-	let currentRep = $state(0);
-	let currentRepWrapped = $derived(currentRep % 3)
+	// TODO Ignore storage if different day
+	const storageRep = localStorage.getItem('WorkoutUI:currentRep');
+	let currentRep = $state(storageRep?.length ? parseInt(storageRep) : 0);
+	$effect(() => {
+		localStorage.setItem('WorkoutUI:currentRep', currentRep.toString());
+	});
+	let currentRepWrapped = $derived(currentRep % 3);
+	const MAX_REP = 18;
+
 	let currentExerciseIndex = $state(0);
 
 	type ExerciceInfo = {
@@ -72,15 +79,15 @@ footer {
 <div id='exercise-selector'>
 	<button onclick={() => currentRep -= 3} disabled={currentExerciseIndex <= 0}>{'<'}</button>
 	{currentExerciceInfo.name}
-	<button onclick={() => currentRep += 3} disabled={currentExerciseIndex >= 6}>{'>'}</button>
+	<button onclick={() => currentRep = Math.min(MAX_REP, currentRep + 3)} disabled={currentExerciseIndex >= 6}>{'>'}</button>
 </div>
 
 <!--TODO Persist rep on reload-->
 <div id='set-info'>
 	{currentExerciceInfo.goalReps}
 	Rep: {currentRepWrapped + 1}
-	<button onclick={() => currentRep--}>-</button>
-	<button onclick={() => currentRep++}>+</button>
+	<button onclick={() => currentRep--} disabled={currentRep === 0}>-</button>
+	<button onclick={() => currentRep++} disabled={currentRep === MAX_REP}>+</button>
 </div>
 
 <!--TODO Add timer, with play pause stop-->
