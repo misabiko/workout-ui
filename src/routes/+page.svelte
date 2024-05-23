@@ -101,7 +101,9 @@ footer {
 
 <!--TODO Editable notes-->
 <!--TODO Format note in markdown-->
-<textarea readonly>{currentExerciceInfo.notes}</textarea>
+{#if currentExerciceInfo.notes}
+	<textarea readonly>{currentExerciceInfo.notes}</textarea>
+{/if}
 <!--<div id='previous-notes'>-->
 <!--TODO Fetch data from previous days-->
 <!--</div>-->
