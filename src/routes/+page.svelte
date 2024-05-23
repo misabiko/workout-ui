@@ -11,7 +11,27 @@
 
 	let currentRep = $state(0);
 	let currentRepWrapped = $derived(currentRep % 3)
-	let currentExercise = $state(0);
+	let currentExerciseIndex = $state(0);
+
+	type ExerciceInfo = {
+		//TODO Add progression enum
+		progression: string;
+		//TODO Remove index from name
+		name: string;
+		//TODO Parse reps to number array
+		goalReps: string;
+		doneReps: string;
+		notes: string | null;
+	}
+
+	let currentExerciceRaw = $derived(values[Math.floor(currentRep / 3)]);
+	let currentExerciceInfo = $derived<ExerciceInfo>({
+		progression: currentExerciceRaw[0],
+		name: currentExerciceRaw[1],
+		goalReps: currentExerciceRaw[2],
+		doneReps: currentExerciceRaw[3],
+		notes: currentExerciceRaw[4] ?? null,
+	});
 </script>
 
 <style>
@@ -58,15 +78,14 @@ footer {
 
 <!--TODO Make button position fixed (take max exercice text length)-->
 <div id='exercise-selector'>
-	<button onclick={() => currentRep -= 3} disabled={currentExercise <= 0}>{'<'}</button>
-	{values[Math.floor(currentRep / 3)][1]}
-	<button onclick={() => currentRep += 3} disabled={currentExercise >= 6}>{'>'}</button>
+	<button onclick={() => currentRep -= 3} disabled={currentExerciseIndex <= 0}>{'<'}</button>
+	{currentExerciceInfo.name}
+	<button onclick={() => currentRep += 3} disabled={currentExerciseIndex >= 6}>{'>'}</button>
 </div>
 
 <!--TODO Persist rep on reload-->
 <div id='set-info'>
-	{values[Math.floor(currentRep / 3)][2]}
-	<!--TODO Add current rep marker-->
+	{currentExerciceInfo.goalReps}
 	Rep: {currentRepWrapped + 1}
 	<button onclick={() => currentRep--}>-</button>
 	<button onclick={() => currentRep++}>+</button>
@@ -77,8 +96,12 @@ footer {
 <!--TODO Persist timer-->
 <!--TODO End timer changes rep-->
 
-<!--TODO Add note-->
+<!--TODO Editable notes-->
 <!--TODO Format note in markdown-->
+<textarea readonly>{currentExerciceInfo.notes}</textarea>
+<!--<div id='previous-notes'>-->
+<!--TODO Fetch data from previous days-->
+<!--</div>-->
 
 <footer>
 	<a href={spreadsheetUrl}>Spreadsheet</a>
