@@ -3,8 +3,6 @@
 	import Timer from "./Timer.svelte";
 	import {untrack} from "svelte";
 
-	// TODO Configure eslint
-
 	let {data}: {
 		data: PageData
 	} = $props();
