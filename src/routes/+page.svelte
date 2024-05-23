@@ -1,6 +1,7 @@
 <script lang='ts'>
 	import type { PageData } from './$types';
 	import Timer from "./Timer.svelte";
+	import {untrack} from "svelte";
 
 	// TODO Configure eslint
 
@@ -12,11 +13,22 @@
 	const values = data.values;
 	const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${data.spreadsheetId}/edit#gid=0`;
 
+	let timerComponent = $state<Timer>();
+
 	// TODO Ignore storage if different day
 	const storageRep = localStorage.getItem('WorkoutUI:currentRep');
-	let currentRep = $state(storageRep?.length ? parseInt(storageRep) : 0);
+	//Storing previousRep so that the $effect doesn't reset the timer on page load
+	let previousRep = storageRep?.length ? parseInt(storageRep) : 0;
+	let currentRep = $state(previousRep);
 	$effect(() => {
 		localStorage.setItem('WorkoutUI:currentRep', currentRep.toString());
+		if (currentRep !== previousRep) {
+			previousRep = currentRep;
+			untrack(() => {
+				if (timerComponent)
+					timerComponent.externalResetTimer(true);
+			});
+		}
 	});
 	let currentRepWrapped = $derived(currentRep % 3);
 	const MAX_REP = 18;
@@ -71,7 +83,7 @@ footer {
 }
 </style>
 
-<Timer/>
+<Timer bind:this={timerComponent}/>
 
 <!--TODO Make button position fixed-->
 <div id='exercise-selector'>
@@ -80,7 +92,6 @@ footer {
 	<button onclick={() => currentRep = Math.min(MAX_REP, currentRep + 3)} disabled={currentExerciseIndex >= 6}>{'>'}</button>
 </div>
 
-<!--TODO Persist rep on reload-->
 <div id='set-info'>
 	{currentExerciceInfo.goalReps}
 	Rep: {currentRepWrapped + 1}
