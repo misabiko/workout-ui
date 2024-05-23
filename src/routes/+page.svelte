@@ -42,6 +42,7 @@
 	align-items: center;
 	gap: .5em;
 	padding: 1em;
+	font-family: Roboto, sans-serif;
 }
 
 footer {
@@ -51,15 +52,6 @@ footer {
 	bottom: 0;
 	padding: 1em;
 }
-
-/*TODO body roboto font*/
-/*TODO center body*/
-/*#date-selector, #exercise-selector, #set-info {*/
-/*	display: flex;*/
-/*	justify-content: center;*/
-/*	align-items: center;*/
-/*	gap: 1rem;*/
-/*}*/
 
 #progress-bar {
 	position: absolute;
