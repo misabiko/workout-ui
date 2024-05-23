@@ -1,5 +1,8 @@
-<script lang="ts">
+<script lang='ts'>
 	import type { PageData } from './$types';
+	import Timer from "./Timer.svelte";
+
+	// TODO Configure eslint
 
 	let {data}: {
 		data: PageData
@@ -21,7 +24,6 @@
 	let currentExerciseIndex = $state(0);
 
 	type ExerciceInfo = {
-		//TODO Add progression enum
 		progression: string;
 		//TODO Remove index from name
 		name: string;
@@ -69,13 +71,9 @@ footer {
 }
 </style>
 
-<div id='date-selector'>
-<!--	<button onclick={() => date.setDate(date.getDate() - 1)}>{'<'}</button>-->
-	{data.date}
-<!--	<button onclick={() => date.setDate(date.getDate() + 1)}>{'>'}</button>-->
-</div>
+<Timer/>
 
-<!--TODO Make button position fixed (take max exercice text length)-->
+<!--TODO Make button position fixed-->
 <div id='exercise-selector'>
 	<button onclick={() => currentRep -= 3} disabled={currentExerciseIndex <= 0}>{'<'}</button>
 	{currentExerciceInfo.name}
@@ -90,17 +88,18 @@ footer {
 	<button onclick={() => currentRep++} disabled={currentRep === MAX_REP}>+</button>
 </div>
 
-<!--TODO Add timer, with play pause stop-->
-<!--TODO Use animate request to update timer?-->
-<!--TODO Persist timer-->
-<!--TODO End timer changes rep-->
-
 <!--TODO Editable notes-->
 <!--TODO Format note in markdown-->
 <textarea readonly>{currentExerciceInfo.notes}</textarea>
 <!--<div id='previous-notes'>-->
 <!--TODO Fetch data from previous days-->
 <!--</div>-->
+
+<div id='date-selector'>
+	<!--	<button onclick={() => date.setDate(date.getDate() - 1)}>{'<'}</button>-->
+	{data.date}
+	<!--	<button onclick={() => date.setDate(date.getDate() + 1)}>{'>'}</button>-->
+</div>
 
 <footer>
 	<a href={spreadsheetUrl}>Spreadsheet</a>
