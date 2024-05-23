@@ -33,26 +33,32 @@
 	let currentRepWrapped = $derived(currentRep % 3);
 	const MAX_REP = 18;
 
-	let currentExerciseIndex = $state(0);
-
 	type ExerciceInfo = {
 		progression: string;
-		//TODO Remove index from name
 		name: string;
-		//TODO Parse reps to number array
-		goalReps: string;
-		doneReps: string;
+		goalReps: number[]
+		doneReps: number[];
 		notes: string | null;
 	}
 
-	let currentExerciceRaw = $derived(values[Math.floor(currentRep / 3)]);
+	let currentExerciseIndex = $derived(Math.floor(currentRep / 3));
+	let currentExerciceRaw = $derived(values[currentExerciseIndex]);
 	let currentExerciceInfo = $derived<ExerciceInfo>({
 		progression: currentExerciceRaw[0],
-		name: currentExerciceRaw[1],
-		goalReps: currentExerciceRaw[2],
-		doneReps: currentExerciceRaw[3],
+		name: currentExerciceRaw[1].replace(/^\d+ - /, ''),
+		goalReps: parseReps(currentExerciceRaw[2]),
+		doneReps: parseReps(currentExerciceRaw[3]),
 		notes: currentExerciceRaw[4] ?? null,
 	});
+
+	function parseReps(reps: string): number[] {
+		if (currentExerciseIndex <= 6)
+			return reps.split('.').map(rep => {
+				return parseInt(rep);
+			});
+		else
+			return [0];
+	}
 </script>
 
 <style>
@@ -61,17 +67,11 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: .5em;
+	justify-content: space-between;
 	padding: 1em;
 	font-family: Roboto, sans-serif;
-}
-
-footer {
-	display: flex;
-	flex-direction: column;
-	position: absolute;
-	bottom: 0;
-	padding: 1em;
+	/*height: max - padding*/
+	height: calc(100vh - 2em);
 }
 
 #progress-bar {
@@ -81,9 +81,45 @@ footer {
 	bottom: 0;
 	z-index: -100;
 }
+
+/*#exercise-selector {*/
+/*	margin-bottom: 12vh;*/
+/*}*/
+
+#goal-reps {
+	display: flex;
+	justify-content: space-around;
+	width: 100%;
+	font-size: 1.5em
+}
+
+#goal-reps > div {
+	position: relative;
+	height: 3.5em;
+	text-align: center;
+}
+
+#goal-reps > div > span {
+	position: absolute;
+	translate: -50%;
+}
+
+#current-rep {
+	font-size: 3.5em;
+}
+
+footer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
 </style>
 
-<Timer bind:this={timerComponent}/>
+<div id='date-selector'>
+	<!--	<button onclick={() => date.setDate(date.getDate() - 1)}>{'<'}</button>-->
+	{data.date}
+	<!--	<button onclick={() => date.setDate(date.getDate() + 1)}>{'>'}</button>-->
+</div>
 
 <!--TODO Make button position fixed-->
 <div id='exercise-selector'>
@@ -92,27 +128,27 @@ footer {
 	<button onclick={() => currentRep = Math.min(MAX_REP, currentRep + 3)} disabled={currentExerciseIndex >= 6}>{'>'}</button>
 </div>
 
+<div id='goal-reps'>
+	{#each currentExerciceInfo.goalReps as goalRep, i}
+		<div>
+			<span id={i === currentRepWrapped ? 'current-rep' : undefined}>{goalRep}</span>
+		</div>
+	{/each}
+</div>
+
 <div id='set-info'>
-	{currentExerciceInfo.goalReps}
-	Rep: {currentRepWrapped + 1}
 	<button onclick={() => currentRep--} disabled={currentRep === 0}>-</button>
 	<button onclick={() => currentRep++} disabled={currentRep === MAX_REP}>+</button>
 </div>
 
 <!--TODO Editable notes-->
 <!--TODO Format note in markdown-->
-{#if currentExerciceInfo.notes}
-	<textarea readonly>{currentExerciceInfo.notes}</textarea>
-{/if}
+<textarea readonly>{currentExerciceInfo.notes}</textarea>
 <!--<div id='previous-notes'>-->
 <!--TODO Fetch data from previous days-->
 <!--</div>-->
 
-<div id='date-selector'>
-	<!--	<button onclick={() => date.setDate(date.getDate() - 1)}>{'<'}</button>-->
-	{data.date}
-	<!--	<button onclick={() => date.setDate(date.getDate() + 1)}>{'>'}</button>-->
-</div>
+<Timer bind:this={timerComponent}/>
 
 <footer>
 	<a href={spreadsheetUrl}>Spreadsheet</a>
