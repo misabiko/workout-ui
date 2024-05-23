@@ -72,11 +72,11 @@
 <div id='timer'>
 	<!--TODO Clamp at 0 and add separate "extra time" counter-->
 	<span id='seconds'>{DURATION - elapsedSeconds}</span>
-	<progress value={elapsedSeconds / DURATION}></progress>
+	<progress value='{elapsedSeconds / DURATION}'></progress>
 
-	<button onclick={() => startTimer()} disabled={frame !== null}>Play</button>
+	<button onclick='{() => startTimer()}' disabled='{frame !== null}'>Play</button>
 
-	<button onclick={() => resetTimer(true)} disabled={frame === null}>Reset</button>
+	<button onclick='{() => resetTimer(true)}' disabled='{frame === null}'>Reset</button>
 </div>
 
-<svelte:window onclick={() => timerExpiredAudio.pause()}></svelte:window>
+<svelte:window onclick='{() => timerExpiredAudio.pause()}'></svelte:window>

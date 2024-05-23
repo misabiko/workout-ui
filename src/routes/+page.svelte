@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import type { PageData } from './$types';
-	import Timer from "./Timer.svelte";
-	import {untrack} from "svelte";
+	import Timer from './Timer.svelte';
+	import {untrack} from 'svelte';
 
 	let {data}: {
 		data: PageData
@@ -32,12 +32,12 @@
 	const MAX_REP = 18;
 
 	type ExerciceInfo = {
-		progression: string;
-		name: string;
+		progression: string
+		name: string
 		goalReps: number[]
-		doneReps: number[];
-		notes: string | null;
-	}
+		doneReps: number[]
+		notes: string | null
+	};
 
 	let currentExerciseIndex = $derived(Math.floor(currentRep / 3));
 	let currentExerciceRaw = $derived(values[currentExerciseIndex]);
@@ -113,7 +113,7 @@
 	translate: -50%;
 }
 
-#current-rep {
+.current-rep {
 	font-size: 3.5em;
 }
 
@@ -131,22 +131,22 @@ footer {
 </div>
 
 <div id='exercise-selector'>
-	<button onclick={() => currentRep -= 3} disabled={currentExerciseIndex <= 0}>{'<'}</button>
+	<button onclick='{() => currentRep -= 3}' disabled='{currentExerciseIndex <= 0}'>{'<'}</button>
 	<span>{currentExerciceInfo.name}</span>
-	<button onclick={() => currentRep = Math.min(MAX_REP, currentRep + 3)} disabled={currentExerciseIndex >= 6}>{'>'}</button>
+	<button onclick='{() => currentRep = Math.min(MAX_REP, currentRep + 3)}' disabled='{currentExerciseIndex >= 6}'>{'>'}</button>
 </div>
 
 <div id='goal-reps'>
 	{#each currentExerciceInfo.goalReps as goalRep, i}
 		<div>
-			<span id={i === currentRepWrapped ? 'current-rep' : undefined}>{goalRep}</span>
+			<span class:current-rep='{i === currentRepWrapped}'>{goalRep}</span>
 		</div>
 	{/each}
 </div>
 
 <div id='set-info'>
-	<button onclick={() => currentRep--} disabled={currentRep === 0}>-</button>
-	<button onclick={() => currentRep++} disabled={currentRep === MAX_REP}>+</button>
+	<button onclick='{() => currentRep--}' disabled='{currentRep === 0}'>-</button>
+	<button onclick='{() => currentRep++}' disabled='{currentRep === MAX_REP}'>+</button>
 </div>
 
 <!--TODO Editable notes-->

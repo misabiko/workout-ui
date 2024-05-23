@@ -1,4 +1,4 @@
-import {google} from "googleapis";
+import {google} from 'googleapis';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { SPREADSHEET_ID } from '$env/static/private';
@@ -19,7 +19,7 @@ export const load: PageServerLoad = async () => {
 	if (!datesRes.data.values)
 		error(500, 'Failed database date request.');
 
-	const today = (new Date()).toLocaleDateString("en-US");
+	const today = (new Date()).toLocaleDateString('en-US');
 	const index = datesRes.data.values.findIndex(row => row[0] === today);
 	if (index === -1)
 		error(500, `Failed database request for date '${today}'`);
@@ -37,6 +37,6 @@ export const load: PageServerLoad = async () => {
 		values: dataRes.data.values as string[][],
 		spreadsheetId: SPREADSHEET_ID,
 	};
-}
+};
 
 export const ssr = false;
