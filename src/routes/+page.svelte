@@ -82,9 +82,20 @@
 	z-index: -100;
 }
 
-/*#exercise-selector {*/
-/*	margin-bottom: 12vh;*/
-/*}*/
+#exercise-selector {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+#set-info {
+	width: 100%;
+	display: flex;
+	justify-content: space-around;
+}
+#exercise-selector > button, #set-info > button {
+	margin: 0 1.5em;
+}
 
 #goal-reps {
 	display: flex;
@@ -121,10 +132,9 @@ footer {
 	<!--	<button onclick={() => date.setDate(date.getDate() + 1)}>{'>'}</button>-->
 </div>
 
-<!--TODO Make button position fixed-->
 <div id='exercise-selector'>
 	<button onclick={() => currentRep -= 3} disabled={currentExerciseIndex <= 0}>{'<'}</button>
-	{currentExerciceInfo.name}
+	<span>{currentExerciceInfo.name}</span>
 	<button onclick={() => currentRep = Math.min(MAX_REP, currentRep + 3)} disabled={currentExerciseIndex >= 6}>{'>'}</button>
 </div>
 
