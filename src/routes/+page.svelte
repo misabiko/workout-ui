@@ -69,12 +69,12 @@
 	padding: 1em;
 	font-family: Roboto, sans-serif;
 	/*height: max - padding*/
-	height: calc(100vh - 2em);
+	height: calc(100dvh - 2em);
 }
 
 #progress-bar {
 	position: absolute;
-	width: 100vw;
+	width: 100dvw;
 	background-color: #ccccff;
 	bottom: 0;
 	z-index: -100;
@@ -165,4 +165,4 @@ footer {
 
 <!--TODO Changes color on exercice-->
 <!--TODO Animate height transition-->
-<div id='progress-bar' style='height:{100 / 3 * currentRepWrapped}vh'></div>
+<div id='progress-bar' style='height:{100 / 3 * currentRepWrapped}dvh'></div>

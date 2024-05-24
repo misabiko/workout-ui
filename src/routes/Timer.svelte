@@ -8,6 +8,7 @@
 
 	const DURATION = 60;
 	let elapsedTime = $state((storageElapsedTime > DURATION * 1000) ? 0 : storageElapsedTime);
+	let elapsedRatio = $derived(elapsedTime / (DURATION * 1000));
 	let elapsedSeconds = $derived(Math.floor(elapsedTime / 1000));
 
 	let startTime = $state(storageStartTime?.length ? parseFloat(storageStartTime) : 0);
@@ -20,10 +21,11 @@
 
 		elapsedTime = Date.now() - startTime;
 
-		if (elapsedSeconds >= DURATION) {
+		if (elapsedRatio > 1) {
 			timerExpiredAudio.currentTime = 0;
 			timerExpiredAudio.play();
-			alert('Timer over');
+			//Alert messes up a few things by stopping the animation and stuff
+			// alert('Timer over');
 			resetTimer(false, true);
 		}
 	}
@@ -62,17 +64,53 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		gap: 0.5em;
 	}
 
-	#seconds {
-		font-size: 6em;
+	#progress-circle {
+		position: relative;
+		width: 8em;
+		height: 8em;
+		line-height: 8em;
+		text-align: center;
+	}
+	#progress-circle > svg, #progress-circle > span {
+		position: absolute;
+		translate: -50%;
+	}
+	#progress-circle > svg {
+		width: 100%;
+		height: 100%;
+	}
+	#progress-circle span {
+		font-size: 5em;
+	}
+
+	#progress-circle circle {
+		stroke-width: 5px;
+		fill: transparent;
+	}
+	#progress-circle-overlay {
+		/*2PI * svg size * radius*/
+		stroke-dasharray: calc(2 * PI * 8em * .45);
+		stroke: blue;
+		transform: rotate(90deg);
+		transform-origin: 50% 50%;
+	}
+	#progress-circle-background {
+		stroke: lightgray;
 	}
 </style>
 
 <div id='timer'>
-	<!--TODO Clamp at 0 and add separate "extra time" counter-->
-	<span id='seconds'>{DURATION - elapsedSeconds}</span>
-	<progress value='{elapsedSeconds / DURATION}'></progress>
+	<div id='progress-circle'>
+		<svg>
+			<circle id='progress-circle-background' cx='50%' cy='50%' r='45%'/>
+			<circle id='progress-circle-overlay' cx='50%' cy='50%' r='45%' stroke-dashoffset='calc(2 * PI * 8em * .45 * {Math.max(0, 1 - elapsedRatio)})'/>
+		</svg>
+		<!--TODO Clamp at 0 and add separate "extra time" counter-->
+		<span>{DURATION - elapsedSeconds}</span>
+	</div>
 
 	<button onclick='{() => startTimer()}' disabled='{frame !== null}'>Play</button>
 
