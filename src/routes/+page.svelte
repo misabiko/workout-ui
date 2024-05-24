@@ -8,7 +8,6 @@
 	} = $props();
 
 	// TODO Handle not-workout day
-	const values = data.values;
 	const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${data.spreadsheetId}/edit#gid=0`;
 
 	let timerComponent = $state<Timer>();
@@ -39,7 +38,7 @@
 	};
 
 	let currentExerciseIndex = $derived(Math.floor(currentRep / 3));
-	let currentExerciceRaw = $derived(values[currentExerciseIndex]);
+	let currentExerciceRaw = $derived(data.currentDay[currentExerciseIndex]);
 	let currentExerciceInfo = $derived<ExerciceInfo>({
 		progression: currentExerciceRaw[0],
 		name: currentExerciceRaw[1].replace(/^\d+ - /, ''),
@@ -60,6 +59,8 @@
 	const repProgressBarColors = [...Array(6).keys()].map(i => {
 		return `hsl(${((i + 1) % 6) * 60}, 100%, 90%)`;
 	});
+
+	let noteIndex = $state(data.todayIndex);
 </script>
 
 <style>
@@ -88,6 +89,22 @@
 }
 #exercise-selector > button, #set-info > button {
 	margin: 0 1.5em;
+}
+
+#previous-notes {
+	display: flex;
+	justify-content: space-around;
+	align-items: flex-start;
+	width: 100%;
+}
+#previous-notes > div {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+#previous-notes textarea {
+	width: 60dvw;
+	height: 4em;
 }
 
 #goal-reps {
@@ -163,10 +180,14 @@ footer {
 
 <!--TODO Editable notes-->
 <!--TODO Format note in markdown-->
-<textarea readonly>{currentExerciceInfo.notes}</textarea>
-<!--<div id='previous-notes'>-->
-<!--TODO Fetch data from previous days-->
-<!--</div>-->
+<div id='previous-notes'>
+	<button onclick='{() => noteIndex--}' disabled='{noteIndex === 0}'>-</button>
+	<div>
+		<span>{data.datesWithNotes[noteIndex].date}</span>
+		<textarea readonly>{data.datesWithNotes[noteIndex].notes[currentExerciseIndex] ?? ''}</textarea>
+	</div>
+	<button onclick='{() => noteIndex++}' disabled='{noteIndex === data.todayIndex}'>+</button>
+</div>
 
 <Timer bind:this={timerComponent}/>
 
