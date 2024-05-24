@@ -15,9 +15,9 @@
 
 	// TODO Ignore storage if different day
 	const storageRep = localStorage.getItem('WorkoutUI:currentRep');
-	//Storing previousRep so that the $effect doesn't reset the timer on page load
 	let previousRep = storageRep?.length ? parseInt(storageRep) : 0;
 	let currentRep = $state(previousRep);
+	let currentRepWrapped = $derived(currentRep % 3);
 	$effect(() => {
 		localStorage.setItem('WorkoutUI:currentRep', currentRep.toString());
 		if (currentRep !== previousRep) {
@@ -28,7 +28,6 @@
 			});
 		}
 	});
-	let currentRepWrapped = $derived(currentRep % 3);
 	const MAX_REP = 18;
 
 	type ExerciceInfo = {
@@ -57,6 +56,10 @@
 		else
 			return [0];
 	}
+
+	const repProgressBarColors = [...Array(6).keys()].map(i => {
+		return `hsl(${((i + 1) % 6) * 60}, 100%, 90%)`;
+	});
 </script>
 
 <style>
@@ -70,14 +73,6 @@
 	font-family: Roboto, sans-serif;
 	/*height: max - padding*/
 	height: calc(100dvh - 2em);
-}
-
-#progress-bar {
-	position: absolute;
-	width: 100dvw;
-	background-color: #ccccff;
-	bottom: 0;
-	z-index: -100;
 }
 
 #exercise-selector {
@@ -122,6 +117,23 @@ footer {
 	flex-direction: column;
 	align-items: center;
 }
+
+#progress-bar {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: -100;
+}
+
+.progress-bar-overlay {
+	position: absolute;
+	background-color: #ccccff;
+	bottom: 0;
+	width: 100%;
+	transition: height 0.5s;
+}
 </style>
 
 <div id='date-selector'>
@@ -163,6 +175,8 @@ footer {
 	<a href='http://www.startbodyweight.com/p/start-bodyweight-basic-routine.html'>Start Bodyweight basic routine</a>
 </footer>
 
-<!--TODO Changes color on exercice-->
-<!--TODO Animate height transition-->
-<div id='progress-bar' style='height:{100 / 3 * currentRepWrapped}dvh'></div>
+<div id='progress-bar'>
+	{#each repProgressBarColors as color, i}
+		<div class='progress-bar-overlay' style='background-color:{color}; height:{100 * (Math.max(i * 3, Math.min(currentRep, (i + 1) * 3)) - i * 3) / 3}dvh;'></div>
+	{/each}
+</div>
