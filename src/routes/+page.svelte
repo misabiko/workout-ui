@@ -48,12 +48,12 @@
 	});
 
 	function parseReps(reps: string): number[] {
-		if (currentExerciseIndex <= 6)
+		if (!reps?.length)
+			return [];
+		else// if (currentExerciseIndex <= 6)
 			return reps.split('.').map(rep => {
 				return parseInt(rep);
 			});
-		else
-			return [0];
 	}
 
 	const repProgressBarColors = [...Array(6).keys()].map(i => {
